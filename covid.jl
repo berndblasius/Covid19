@@ -30,7 +30,7 @@ const cases_de =
      [Date(2020,3,9)  1112];
      #[Date(2020,3,10) 1296]   # I believe the RKI number is too small
      [Date(2020,3,10) 1550];    # probably more to the truth
-     [Date(2020,3,11) 1908]    # probably more to the truth
+     [Date(2020,3,11) 1908]   
     ]  
 
 # Cases in Italy (from Wikipedia)
@@ -112,8 +112,8 @@ function nlys(scenario)
       N  = 82 * 1e6  # population size Germany
       E0 = 500   # this is just put in by hand to make a smooth start
       I0 = 16
-      A0 = 16
-      H0 = 0
+      A0 = 16    # intially equal number of reported and unreported 
+      H0 = 0     # assume initially there are no hospitalized 
 
       #b = 2.0 # to fit the data in the first 10 days in Germany,
                # either
@@ -239,7 +239,7 @@ function nlys(scenario)
       ylabel("R0")
       xlabel("time (days)")
 
-      #savefig("outbreak_Germany.png")
+      savefig("outbreak_Germany.png")
   end
 
 
