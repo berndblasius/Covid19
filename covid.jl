@@ -29,7 +29,8 @@ const cases_de =
      [Date(2020,3,8)  847];
      [Date(2020,3,9)  1112];
      #[Date(2020,3,10) 1296]   # I believe the RKI number is too small
-     [Date(2020,3,10) 1550]    # probably more to the truth
+     [Date(2020,3,10) 1550];    # probably more to the truth
+     [Date(2020,3,11) 1908]    # probably more to the truth
     ]  
 
 # Cases in Italy (from Wikipedia)
@@ -52,7 +53,8 @@ const cases_it =
      [Date(2020,3,7)  5883];
      [Date(2020,3,8)  7375];
      [Date(2020,3,9)  9172];
-     [Date(2020,3,10) 10149]    # probably > 1500
+     [Date(2020,3,10) 10149];    
+     [Date(2020,3,11) 12462]    
     ]  
 
 
@@ -202,7 +204,7 @@ function nlys(scenario)
       plot(t_de,I_de,"r*")
       plot(t,I)
       xlim(0,26)     
-      ylim(0,11000)
+      ylim(0,13000)
       ylabel("infected, inital period")
 
       subplot(3,2,3)  # whole outbreak on a half-logarithmic scale
@@ -220,19 +222,21 @@ function nlys(scenario)
       xlabel("time (days)")
       ylabel("log10(infected)")
       xlim(0,26)
-      ylim(0,4)
+      ylim(0,4.5)
 
       subplot(3,2,5)  # other model stages
       plot(t,E)
       plot(t,R)
       plot(t,H)
       plot(t,S)
+      ylabel("Other states")
       xlim(0,60)
       xlabel("time (days)")
 
       subplot(3,2,6)
       plot(t,R0)  # basic reproductive number according to the formula of Wang et al.
       xlim(0,60)
+      ylabel("R0")
       xlabel("time (days)")
 
       #savefig("outbreak_Germany.png")
