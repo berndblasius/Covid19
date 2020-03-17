@@ -1,18 +1,34 @@
-# Covid19
+# Covid19 
+## Modelling and data analysis tools to study 2019/20 COVID-19 outbreak
+
+
+## data folder
+This folder contains time series data taken from
+John Hopkins CSSE repository
+https://github.com/CSSEGISandData/COVID-19
+
+
+## src folder
+
+Wang_SEIAHR.jl : SEIR-like model from Wang et al.  
+read_data.jl   : two functions to read-in data  
+corona_tsa.jl  : function for outbreak time series analysis
+
+
+#### Wang_SEIAHR.jl
 Wang et al SEIR-model for 2019/20 Covid-19 outbreak
 
-
-**Description**: A julia implementation of the SEIR-like model describing the Coronavirus Covid-19 outbreak 2019/20,
+**Description**: A julia implementation of the SEIR-like model describing the Coronavirus COVID-19 outbreak 2019/20,
 based on the publication: Wang et al. (2020) Evolving epidemiology and impact of non-pharmaceutical interventions on the outbreak of coronavirus disease 2019 in Wuhan, China. MedRxive https://doi.org/10.1101/2020.03.03.20030593
 
 
 **Disclaimer**: 
-*This code is not meant to be a qualatitive tool for predicting the current outbreak dynamics in different parts of the world*:
+*This code is not meant to be a quantitive tool for predicting the current outbreak dynamics in different parts of the world*:
 - The publication by Wang et al. was posted on a preprint server and has not yet been passed peer review.
 - I did not contact these authors, but instead just implemented the code from their publication, as I understood it, into Julia.
 - The parameter values from the paper have been fitted to the situation in Wuhan. There are many reasons to doubt whether these parameters can simply be transfered to the situation in Europe, or other regions in the world.
 
-The motivations for this code is merely to give people a starting ground for running and exloring outbreak simulations.  
+The motivations for this code is merely to give people a starting ground for running and exploring outbreak simulations.  
 
 **Description**: The model is a variant of a standard 
 Susceptible-Exposed-Infectious-Recovered (SEIR) model.

@@ -1,4 +1,4 @@
-# SEIR model for Corona outbreak 2019/20
+# SEIR-like model for Corona outbreak 2019/20
 #
 # based on Wang et al. Evolving epidemiology and impact of non-pharmaceutical
 # interventions on the outbreak of coronavirus disease 2019 in Wuhan, China.
@@ -6,69 +6,10 @@
 
 module C
 
-using Dates, PyPlot, DifferentialEquations
+using Dates, PyPlot, DifferentialEquations, Polynomials
 
-# Data on infection curves 
+include("read_data.jl")
 
-# Cases in Germany
-# from Wikipedia, which cites Robert Koch Institute
-const cases_de =
-    [[Date(2020,2,24) 16];
-     [Date(2020,2,25) 18];
-     [Date(2020,2,26) 21];
-     [Date(2020,2,27) 26];
-     [Date(2020,2,28) 54];
-     [Date(2020,2,29) 66];
-     [Date(2020,3,1)  117];
-     [Date(2020,3,2)  151];
-     [Date(2020,3,3)  188];
-     [Date(2020,3,4)  240];
-     [Date(2020,3,5)  349];
-     [Date(2020,3,6)  535];
-     [Date(2020,3,7)  684];
-     [Date(2020,3,8)  847];
-     [Date(2020,3,9)  1112];
-     #[Date(2020,3,10) 1296]   # I believe the RKI number is too small
-     [Date(2020,3,10) 1550];    # probably more to the truth
-     [Date(2020,3,11) 1908]   
-    ]  
-
-# Cases in Italy (from Wikipedia)
-const cases_it =
-    [[Date(2020,2,21) 20];
-     [Date(2020,2,22) 79];
-     [Date(2020,2,23) 150];
-     [Date(2020,2,24) 227];
-     [Date(2020,2,25) 320];
-     [Date(2020,2,26) 445];
-     [Date(2020,2,27) 650];
-     [Date(2020,2,28) 888];
-     [Date(2020,2,29) 1128];
-     [Date(2020,3,1)  1694];
-     [Date(2020,3,2)  2036];
-     [Date(2020,3,3)  2502];
-     [Date(2020,3,4)  3089];
-     [Date(2020,3,5)  3858];
-     [Date(2020,3,6)  4636];
-     [Date(2020,3,7)  5883];
-     [Date(2020,3,8)  7375];
-     [Date(2020,3,9)  9172];
-     [Date(2020,3,10) 10149];    
-     [Date(2020,3,11) 12462]    
-    ]  
-
-
-
-function get_infected(country, starting_date)
-  if country == :de
-     t = Dates.value.(cases_de[:,1] .- starting_date)
-     I = cases_de[:,2]
-  elseif country == :it
-     t = Dates.value.(cases_it[:,1] .- starting_date)
-     I = cases_it[:,2]
-  end
-  t, I 
-end
 
 function rhs(du,u,p,t)
   S,E,I,A,H,R = u
@@ -115,10 +56,7 @@ function nlys(scenario)
       A0 = 16    # intially equal number of reported and unreported 
       H0 = 0     # assume initially there are no hospitalized 
 
-      #b = 2.0 # to fit the data in the first 10 days in Germany,
-               # either
-               # we need to increase transmission rate from 1.75 to 2.0
-      r = 0.32 # or we increase the acertainment rate a lot
+      r = 0.22 # slightly increase the acertainment rate 
   elseif scenario == :it
       N  = 60 * 1e6  # population size Italy
       E0 = 1000
@@ -163,8 +101,9 @@ function nlys(scenario)
   # effective reproductive number  (formula from Wang et al)
   R0 = Di .* b ./ (A .+ I) .* (alpha .* A .+ Dq .* I ./ (Di .+ Dq))  
 
-  t_de,I_de = get_infected(:de, Date(2020,2,24))
-  t_it,I_it = get_infected(:it, Date(2020,2,21))
+  t_de,I_de,R_de,D_de = covid_ts("Germany", Date(2020,2,24))
+  t_it,I_it,R_it,D_it = covid_ts("Italy",   Date(2020,2,21))
+
 
   ## Plots ****************************************************
 
@@ -203,8 +142,8 @@ function nlys(scenario)
       plot(t_it .+ 6 ,I_it,"g*")  # time delay Italy cases
       plot(t_de,I_de,"r*")
       plot(t,I)
-      xlim(0,26)     
-      ylim(0,13000)
+      xlim(0,30)     
+      ylim(0,23000)
       ylabel("infected, inital period")
 
       subplot(3,2,3)  # whole outbreak on a half-logarithmic scale
@@ -221,7 +160,7 @@ function nlys(scenario)
       plot(t, log10.(I))
       xlabel("time (days)")
       ylabel("log10(infected)")
-      xlim(0,26)
+      xlim(0,28)
       ylim(0,4.5)
 
       subplot(3,2,5)  # other model stages
@@ -239,7 +178,10 @@ function nlys(scenario)
       ylabel("R0")
       xlabel("time (days)")
 
-      savefig("outbreak_Germany.png")
+      #savefig("outbreak_Germany.png")
+
+
+
   end
 
 
@@ -285,13 +227,14 @@ function nlys(scenario)
 
 end
 
+
 #scenario = :wuhan # Wuhan
 #scenario = :de    # Germany
 #scenario = :it    # Italy
 #scenario = :us    # US
 #scenario = :OL    # Oldenburg (my city in Germany)
-
 nlys(:de)
+
 
 end   # module
 
