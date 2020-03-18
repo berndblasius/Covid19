@@ -57,6 +57,7 @@ function nlys(scenario)
       H0 = 0     # assume initially there are no hospitalized 
 
       r = 0.22 # slightly increase the acertainment rate 
+      #Di =  4.2  # infectious period
   elseif scenario == :it
       N  = 60 * 1e6  # population size Italy
       E0 = 1000
@@ -131,23 +132,23 @@ function nlys(scenario)
       clf()
 
       subplot(3,2,1)  # show the whole outbreak
-      plot(t_it .+ 6 ,I_it,"g*")  # time delay Italy cases
+      #plot(t_it .+ 6 ,I_it,"g*")  # time delay Italy cases
       plot(t_de,I_de,"r*")        # German cases
       plot(t,I)                   # model for acertained infected
-      plot(t,A .+ I, "g")         # model of real (including non-acerted) infected
+      plot(t,A .+ I .+ H, "g")    # model of real (including non-acerted) infected
       xlim(0,60)
       ylabel("infected")
 
       subplot(3,2,2)   # show only the first weeks
-      plot(t_it .+ 6 ,I_it,"g*")  # time delay Italy cases
+      #plot(t_it .+ 6 ,I_it,"g*")  # time delay Italy cases
       plot(t_de,I_de,"r*")
       plot(t,I)
       xlim(0,30)     
-      ylim(0,23000)
+      ylim(0,10000)
       ylabel("infected, inital period")
 
       subplot(3,2,3)  # whole outbreak on a half-logarithmic scale
-      plot(t_it .+ 6,log10.(I_it),"g*")
+      #plot(t_it .+ 6,log10.(I_it),"g*")
       plot(t_de,log10.(I_de),"r*")
       plot(t, log10.(I))
       plot(t, log10.(A), "g")
@@ -155,28 +156,41 @@ function nlys(scenario)
       xlim(0,60)
 
       subplot(3,2,4)  # first weeks on a half-logarithmic scale
-      plot(t_it .+ 6,log10.(I_it),"g*")
+      #plot(t_it .+ 6,log10.(I_it),"g*")
       plot(t_de,log10.(I_de),"r*")
       plot(t, log10.(I))
       xlabel("time (days)")
       ylabel("log10(infected)")
-      xlim(0,28)
+      xlim(0,30)
       ylim(0,4.5)
 
       subplot(3,2,5)  # other model stages
       plot(t,E)
       plot(t,R)
+      plot(t_de,R_de,"r*")
       plot(t,H)
       plot(t,S)
       ylabel("Other states")
       xlim(0,60)
       xlabel("time (days)")
 
-      subplot(3,2,6)
-      plot(t,R0)  # basic reproductive number according to the formula of Wang et al.
-      xlim(0,60)
-      ylabel("R0")
+      subplot(3,2,6)  # other model stages
+      plot(t,E)
+      plot(t,R,"r")
+      plot(t_de,R_de,"r*")
+      plot(t,H)
+      #plot(t,S)
+      ylabel("Other states")
+      xlim(0,30)
+      ylim(0,100)
       xlabel("time (days)")
+
+
+      #subplot(3,2,6)
+      #plot(t,R0)  # basic reproductive number according to the formula of Wang et al.
+      #xlim(0,60)
+      #ylabel("R0")
+      #xlabel("time (days)")
 
       #savefig("outbreak_Germany.png")
 
