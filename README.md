@@ -4,7 +4,8 @@
 Algorithms and code, written by me, to analyse outbreak data and so epidemiological simulations - in my favourite computer language [Julia](https://julialang.org).
 
 **Data**: The folder `data` contains time series data taken from John Hopkins CSSE repository
-https://github.com/CSSEGISandData/COVID-19
+https://github.com/CSSEGISandData/COVID-19  
+Additionally, the folder contains a file with arrival dates of the virus in different countries (calculated by the function `arrival_time` in the src-folder).
 
 
 **Code**: The folder `src` contains algorithms for simulation of outbreak and analysis of data. 
@@ -12,11 +13,13 @@ https://github.com/CSSEGISandData/COVID-19
 
 
 ##### read_data.jl  
-Functions to read-in outbreak time series for a given country. Data are taken from the [John Hopkins CSSE repository](https://github.com/CSSEGISandData/COVID-19). I will try to update the data regularly. The functions include some minor preprocessing, such as interpolations (for known irregularities in the John Hopkins data set).
+Functions to read-in outbreak time series for a given country. Data are taken from the [John Hopkins CSSE repository](https://github.com/CSSEGISandData/COVID-19). I will try to update the data regularly. The functions include some minor preprocessing, such as interpolation for known irregularities in the John Hopkins data set.
+The returned number of infected gives the prevalence, that is, the number of active cases, in contrast to the often given cumulative number of cases.  
+Additionally a function to calculate arrival dates in countries.
 
 ##### corona_tsa.jl  
-Some functions for time series analysis of outbreak data. The focus is on plotting current outbreak dynamics and trends in different countries.
-In particular, incidence vs time, plotting log-transformed data and analysis of local trends. 
+Some functions for time series analysis of outbreak data. The focus is on plotting current dynamics and trends of the outbreaks in different countries.
+In particular, daily incidence, visualization of log-transformed data and analysis of local trends. 
 
 ##### Wang_SEIAHR.jl
 A julia implementation of the SEIR-like model describing the Coronavirus COVID-19 outbreak 2019/20,

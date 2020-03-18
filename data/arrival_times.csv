@@ -1,0 +1,153 @@
+#country,arrival_time,time_dist
+Afghanistan,2020-02-24,85
+Albania,2020-03-09,99
+Algeria,2020-02-25,86
+Andorra,2020-03-02,92
+Antigua and Barbuda,2020-03-13,103
+Argentina,2020-03-03,93
+Armenia,2020-03-01,91
+Aruba,2020-03-13,103
+Australia,2020-02-01,62
+Austria,2020-02-25,86
+Azerbaijan,2020-03-01,91
+Bahrain,2020-02-24,85
+Bangladesh,2020-03-08,98
+Barbados,2020-03-17,107
+Belarus,2020-02-28,89
+Belgium,2020-02-04,65
+Benin,2020-03-16,106
+Bhutan,2020-03-06,96
+Bolivia,2020-03-11,101
+Bosnia and Herzegovina,2020-03-05,95
+Brazil,2020-02-26,87
+Brunei,2020-03-09,99
+Bulgaria,2020-03-08,98
+Burkina Faso,2020-03-10,100
+Cambodia,2020-01-27,57
+Cameroon,2020-03-06,96
+Canada,2020-01-26,56
+Central African Republic,2020-03-15,105
+Chile,2020-03-03,93
+China,2020-01-30,60
+Colombia,2020-03-06,96
+Congo (Brazzaville),2020-03-15,105
+Congo (Kinshasa),2020-03-11,101
+Costa Rica,2020-03-06,96
+Cote d'Ivoire,2020-03-11,101
+Croatia,2020-02-25,86
+Cruise Ship,2020-02-07,68
+Cuba,2020-03-12,102
+Cyprus,2020-03-09,99
+Czechia,2020-03-01,91
+Denmark,2020-03-04,94
+Dominican Republic,2020-03-01,91
+Ecuador,2020-03-01,91
+Egypt,2020-02-14,75
+Equatorial Guinea,2020-03-15,105
+Estonia,2020-02-27,88
+Eswatini,2020-03-14,104
+Ethiopia,2020-03-13,103
+Finland,2020-01-29,59
+France,2020-03-11,101
+Gabon,2020-03-14,104
+Georgia,2020-02-26,87
+Germany,2020-01-27,57
+Ghana,2020-03-14,104
+Greece,2020-02-26,87
+Greenland,2020-03-16,106
+Guatemala,2020-03-14,104
+Guernsey,2020-03-14,104
+Guinea,2020-03-13,103
+Guyana,2020-03-12,102
+Holy See,2020-03-06,96
+Honduras,2020-03-11,101
+Hungary,2020-03-04,94
+Iceland,2020-02-28,89
+India,2020-01-30,60
+Indonesia,2020-03-02,92
+Iran,2020-02-19,80
+Iraq,2020-02-24,85
+Ireland,2020-02-29,90
+Israel,2020-02-21,82
+Italy,2020-01-31,61
+Jamaica,2020-03-11,101
+Japan,2020-01-22,52
+Jersey,2020-03-14,104
+Jordan,2020-03-03,93
+Kazakhstan,2020-03-13,103
+Kenya,2020-03-13,103
+"Korea, South",2020-01-22,52
+Kosovo,2020-03-15,105
+Kuwait,2020-02-24,85
+Latvia,2020-03-02,92
+Lebanon,2020-02-21,82
+Liberia,2020-03-16,106
+Liechtenstein,2020-03-04,94
+Lithuania,2020-02-28,89
+Luxembourg,2020-02-29,90
+Malaysia,2020-01-25,55
+Maldives,2020-03-08,98
+Malta,2020-03-07,97
+Martinique,2020-03-07,97
+Mauritania,2020-03-14,104
+Mexico,2020-02-28,89
+Moldova,2020-03-08,98
+Monaco,2020-02-29,90
+Mongolia,2020-03-10,100
+Montenegro,2020-03-17,107
+Morocco,2020-03-02,92
+Namibia,2020-03-14,104
+Nepal,2020-01-25,55
+Netherlands,2020-03-14,104
+New Zealand,2020-02-28,89
+Nigeria,2020-02-28,89
+North Macedonia,2020-02-26,87
+Norway,2020-02-26,87
+Oman,2020-02-24,85
+Pakistan,2020-02-26,87
+Panama,2020-03-10,100
+Paraguay,2020-03-08,98
+Peru,2020-03-06,96
+Philippines,2020-01-30,60
+Poland,2020-03-04,94
+Portugal,2020-03-02,92
+Qatar,2020-02-29,90
+Republic of the Congo,2020-03-16,106
+Romania,2020-02-26,87
+Russia,2020-01-31,61
+Rwanda,2020-03-14,104
+Saint Lucia,2020-03-14,104
+Saint Vincent and the Grenadines,2020-03-14,104
+San Marino,2020-02-27,88
+Saudi Arabia,2020-03-02,92
+Senegal,2020-03-02,92
+Serbia,2020-03-06,96
+Seychelles,2020-03-14,104
+Singapore,2020-01-23,53
+Slovakia,2020-03-06,96
+Slovenia,2020-03-05,95
+Somalia,2020-03-16,106
+South Africa,2020-03-05,95
+Spain,2020-02-01,62
+Sri Lanka,2020-01-27,57
+Sudan,2020-03-13,103
+Suriname,2020-03-14,104
+Sweden,2020-01-31,61
+Switzerland,2020-02-25,86
+Taiwan*,2020-01-22,52
+Tanzania,2020-03-16,106
+Thailand,2020-01-22,52
+The Bahamas,2020-03-16,106
+The Gambia,2020-03-17,107
+Togo,2020-03-06,96
+Trinidad and Tobago,2020-03-14,104
+Tunisia,2020-03-04,94
+Turkey,2020-03-11,101
+US,2020-03-14,104
+Ukraine,2020-03-03,93
+United Arab Emirates,2020-01-29,59
+United Kingdom,2020-03-13,103
+Uruguay,2020-03-14,104
+Uzbekistan,2020-03-15,105
+Venezuela,2020-03-14,104
+Vietnam,2020-01-23,53
