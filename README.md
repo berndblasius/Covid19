@@ -1,5 +1,5 @@
 # Covid19 
-## Modelling and data analysis tools to study 2019/20 COVID-19 outbreak
+## Modelling and data analysis tools to study the 2020 COVID-19 outbreak
 
 Algorithms and code, written by me, to analyse outbreak data and so epidemiological simulations - in my favourite computer language [Julia](https://julialang.org).
 
@@ -7,9 +7,12 @@ Algorithms and code, written by me, to analyse outbreak data and so epidemiologi
 https://github.com/CSSEGISandData/COVID-19  
 Additionally, the folder contains a file with arrival dates of the virus in different countries (calculated by the function `arrival_time` in the src-folder).
 
+**Results**: The folder `figures` contains some figures with analysis results.  
+Further results of the analysis can be found at my [web page](https://www.staff.uni-oldenburg.de/bernd.blasius/project/corona). 
+
+
 
 **Code**: The folder `src` contains algorithms for simulation of outbreak and analysis of data. 
-
 
 
 ##### read_data.jl  
@@ -38,8 +41,5 @@ The motivations for this code is merely to give people a starting ground for run
 Susceptible-Exposed-Infectious-Recovered (SEIR) model.
 Additionally, the model distinguishes between the reported (or acertained) number of infected (I) and the unreported number of infected (A). Individuals in the A-class can cause further infections, in the same way as the reported infected, but they are 'invisible' to mitigation and hospitalization. The model also includes a class of hospitalized (or quarantined) individuals (H). Only acertained infected can enter the H-class and individuals from the H-class cannot infect susceptibles. Additionally the model allows to consider inflows and outflows of people into the region.
 
-
-### Results and Discussion
-Results of the analysis can be found at my [web page](https://www.staff.uni-oldenburg.de/bernd.blasius/project/corona). 
 
  
