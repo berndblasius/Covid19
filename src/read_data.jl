@@ -2,9 +2,15 @@
 # data based on John Hopkins CSSE repository
 # https://github.com/CSSEGISandData/COVID-19
 
-module C
-
 using CSV, DataFrames, Dates
+
+function smooth(x)
+# make log-transform and smooth data
+    lx = log10.(x)
+    b = (1/2)*ones(2)     # flat (rectangular) window -> moving average
+    lx = filtfilt(b,lx)
+    10 .^ lx
+end
 
 # read-in covid-19 time series
 # for infected, the funcion returns the prevalence (active cases)
@@ -28,14 +34,24 @@ function covid_ts(country, starting_date)
       D .+= collect(df_death[i,     5 + days:end]) 
       R .+= collect(df_recovered[i, 5 + days:end]) 
       
+      #=  Now I do smoothing in general
       # hack to interpolate wrong data on March 12
       ind_error = Dates.value(Date(2020,3,12)-starting_date) + 1  # time difference
       I[ind_error] = ceil(Int,sqrt(I[ind_error-1]*I[ind_error+1]))
       R[ind_error] = ceil(Int,sqrt(R[ind_error-1]*R[ind_error+1]))
       D[ind_error] = ceil(Int,sqrt(D[ind_error-1]*D[ind_error+1]))
 
+      if countries[i] == "Switzerland" || countries[i] == "France"
+          ind_error = Dates.value(Date(2020,3,15)-starting_date) + 1  # time difference
+          I[ind_error] = ceil(Int,sqrt(I[ind_error-1]*I[ind_error+1]))
+          R[ind_error] = ceil(Int,sqrt(R[ind_error-1]*R[ind_error+1]))
+          D[ind_error] = ceil(Int,sqrt(D[ind_error-1]*D[ind_error+1]))
+      end
+      =#
+
   end
   I = I .- R .- D
+  #I = smooth(I)
   1:length(I),I,R,D
 end
 
@@ -94,6 +110,3 @@ function arrival_times(th=0, pandemie_start=Date(2019,12,1))
   sep_countries, sep_firsts, time_diff
 end
 
-arrival_times()
-
-end

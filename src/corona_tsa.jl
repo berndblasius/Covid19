@@ -5,10 +5,17 @@
 
 module C
 
-using  Dates, PyPlot, DifferentialEquations, Polynomials
+using  Dates, DSP, PyPlot, DifferentialEquations, Polynomials
 
 include("read_data.jl")
 
+function smooth_log(x)
+# make log-transform and smooth data
+    lx = log10.(x)
+    b = (1/2)*ones(2)     # flat (rectangular) window -> moving average
+    lx = filtfilt(b,lx)
+    10 .^ lx, lx
+end
 
 function local_fit(x,y,di)
 # local slope of graph y(x) from regression in running window
@@ -21,7 +28,7 @@ function local_fit(x,y,di)
     p = polyfit(x[i1:i2],y[i1:i2],1)
     slope[i] = coeffs(p)[2]
   end
-  slope
+  slope, log(10.) .* slope
 end
 
 # doubling time when slope is taken from log10-transformed data
@@ -31,7 +38,7 @@ doubling_time(slope) = log(2.)/log(10.)/slope
 
 function nlys()
 
-   today = " March 17"
+   today = " March 19"
    
    t_de,I_de,R_de,D_de = covid_ts("Germany",       Date(2020,2,23))
    t_it,I_it,R_it,D_it = covid_ts("Italy",         Date(2020,2,20))
@@ -47,38 +54,44 @@ function nlys()
    t_us,I_us,R_us,D_us = covid_ts("US",            Date(2020,2,22))
    t_ir,I_ir,R_ir,D_ir = covid_ts("Iran",          Date(2020,2,19))
    t_il,I_il,R_il,D_il = covid_ts("Israel",        Date(2020,2,27))
+   t_no,I_no,R_no,D_no = covid_ts("Norway",        Date(2020,2,28))
+   t_ca,I_ca,R_ca,D_ca = covid_ts("Canada",        Date(2020,2,27))
 
 
-  lI_de = log10.(I_de)
-  lI_it = log10.(I_it)
-  lI_fr = log10.(I_fr)
-  lI_es = log10.(I_es)
-  lI_jp = log10.(I_jp)
-  lI_cn = log10.(I_cn)
-  lI_kr = log10.(I_kr)
-  lI_ir = log10.(I_ir)
-  lI_us = log10.(I_us)
-  lI_ch = log10.(I_ch)
-  lI_il = log10.(I_il)
-  lI_at = log10.(I_at)
-  lI_uk = log10.(I_uk)
-  lI_nl = log10.(I_nl)
+  I_de, lI_de = smooth_log(I_de)
+  I_it, lI_it = smooth_log(I_it)
+  I_fr, lI_fr = smooth_log(I_fr)
+  I_es, lI_es = smooth_log(I_es)
+  I_jp, lI_jp = smooth_log(I_jp)
+  I_cn, lI_cn = smooth_log(I_cn)
+  I_kr, lI_kr = smooth_log(I_kr)
+  I_ir, lI_ir = smooth_log(I_ir)
+  I_us, lI_us = smooth_log(I_us)
+  I_ch, lI_ch = smooth_log(I_ch)
+  I_il, lI_il = smooth_log(I_il)
+  I_at, lI_at = smooth_log(I_at)
+  I_uk, lI_uk = smooth_log(I_uk)
+  I_nl, lI_nl = smooth_log(I_nl)
+  I_no, lI_no = smooth_log(I_no)
+  I_ca, lI_ca = smooth_log(I_ca)
 
   di = 2 # length of running window: 2*di+1
-  slope_de = local_fit(t_de,lI_de,di)
-  slope_it = local_fit(t_it,lI_it,di)
-  slope_es = local_fit(t_es,lI_es,di)
-  slope_fr = local_fit(t_fr,lI_fr,di)
-  slope_jp = local_fit(t_jp,lI_jp,di)
-  slope_cn = local_fit(t_cn,lI_cn,di)
-  slope_kr = local_fit(t_kr,lI_kr,di)
-  slope_ir = local_fit(t_ir,lI_ir,di)
-  slope_us = local_fit(t_us,lI_us,di)
-  slope_ch = local_fit(t_ch,lI_ch,di)
-  slope_at = local_fit(t_at,lI_at,di)
-  slope_il = local_fit(t_il,lI_il,di)
-  slope_uk = local_fit(t_uk,lI_uk,di)
-  slope_nl = local_fit(t_nl,lI_nl,di)
+  slope_de,growth_de = local_fit(t_de,lI_de,di)
+  slope_it,growth_it = local_fit(t_it,lI_it,di)
+  slope_es,growth_es = local_fit(t_es,lI_es,di)
+  slope_fr,growth_fr = local_fit(t_fr,lI_fr,di)
+  slope_jp,growth_jp = local_fit(t_jp,lI_jp,di)
+  slope_cn,growth_cn = local_fit(t_cn,lI_cn,di)
+  slope_kr,growth_kr = local_fit(t_kr,lI_kr,di)
+  slope_ir,growth_ir = local_fit(t_ir,lI_ir,di)
+  slope_us,growth_us = local_fit(t_us,lI_us,di)
+  slope_ch,growth_ch = local_fit(t_ch,lI_ch,di)
+  slope_at,growth_at = local_fit(t_at,lI_at,di)
+  slope_il,growth_il = local_fit(t_il,lI_il,di)
+  slope_uk,growth_uk = local_fit(t_uk,lI_uk,di)
+  slope_nl,growth_nl = local_fit(t_nl,lI_nl,di)
+  slope_no,growth_no = local_fit(t_no,lI_no,di)
+  slope_ca,growth_ca = local_fit(t_ca,lI_ca,di)
 
   p_tot_de1 = polyfit(t_de[4:12],lI_de[4:12],1)  # fit full slope Germany
   coef = coeffs(p_tot_de1)[2]
@@ -98,11 +111,12 @@ function nlys()
   p_tot_it = polyfit(t_it[10:end],lI_it[10:end],1)  # fit slope 2nd phase Italy
   coef = coeffs(p_tot_it)[2]
   println("slope Italy Phase 2 ",coef, " T12 ", doubling_time(coef))
-  len = length(lI_it)
   lI_fit_it = polyval(p_tot_it, t_it)
 
-  p_tot_es = polyfit(t_es,lI_es,1)  # fit full slope Spain
-  lI_fit_es= polyval(p_tot_es, t_es)
+  p_tot_es1 = polyfit(t_es[6:18],lI_es[6:18],1)  # fit full slope Spain
+  lI_fit_es1= polyval(p_tot_es1, t_es)
+  p_tot_es2 = polyfit(t_es[19:24],lI_es[19:24],1)  # fit full slope Spain
+  lI_fit_es2= polyval(p_tot_es2, t_es)
 
   p_tot_fr1 = polyfit(t_fr[3:14],lI_fr[3:14],1)  # fit full slope France
   lI_fit_fr1= polyval(p_tot_fr1, t_fr)
@@ -124,7 +138,7 @@ function nlys()
   p_tot_us = polyfit(t_us,lI_us,1)  # fit full slope USA
   lI_fit_us= polyval(p_tot_us, t_us)
 
-  p_tot_ch = polyfit(t_ch,lI_ch,1)  # fit full slope Switzerland
+  p_tot_ch = polyfit(t_ch[11:22],lI_ch[11:22],1)  # fit full slope Switzerland
   lI_fit_ch= polyval(p_tot_ch, t_ch)
 
   p_tot_at = polyfit(t_at,lI_at,1)  # fit full slope Austria
@@ -136,28 +150,38 @@ function nlys()
   p_tot_uk = polyfit(t_uk,lI_uk,1)  # fit full slope UK
   lI_fit_uk= polyval(p_tot_uk, t_uk)
 
+  p_tot_no = polyfit(t_no,lI_no,1)  # fit full slope Norway
+  lI_fit_no= polyval(p_tot_no, t_no)
+
+  p_tot_nl = polyfit(t_nl[15:23],lI_nl[15:23],1)  # fit full slope Netherlands
+  lI_fit_nl= polyval(p_tot_nl, t_nl)
+
+  p_tot_ca = polyfit(t_ca,lI_ca,1)  # fit full slope Norway
+  lI_fit_ca= polyval(p_tot_ca, t_ca)
+
   #majorformatter = matplotlib.dates.DateFormatter("%d.%m.%Y")
   #majorlocator = matplotlib.dates.DayLocator(interval=1)
 
 # ********************************************
-  fig = figure("Outbreak Europe1",figsize=(12,8))
+  fig = figure("Outbreak Europe",figsize=(12,8))
   clf()
   subplot(3,4,1)         # Germany
       plot(t_de,I_de,"r*")        
-      ylabel("infected")
+      ylabel("active cases",fontsize=12)
      
       title("Germany,"* today)
-  subplot(3,4,5)
+  ax=subplot(3,4,5)
      # p1 = plot_date(Date(2020,2,17),y,linestyle="-",marker="None",label="test")
-      plot(t_de,lI_de,"r*")        
-      plot(t_de,lI_fit_de1,"k")
-      plot(t_de,lI_fit_de2,"k")
-      ylim(0.5,4.5)
-      ylabel("log10 infected",labelpad=20)
+      semilogy(t_de,I_de,"r*")        
+      semilogy(t_de,10 .^ lI_fit_de1,"k")
+      semilogy(t_de,10 .^ lI_fit_de2,"k")
+      ax.yaxis.grid()
+      ylim(5,5e4)
+      ylabel("active cases",labelpad=20,fontsize=12)
    ax = subplot(3,4,9)
-      plot(t_de,slope_de,"r*-")
-      ylim(0,0.3)
-      yticks([0,0.05,0.1,0.15,0.2,0.25,0.3])
+      plot(t_de,growth_de,"r*-")
+      ylim(0,0.6)
+      #yticks([0,0.05,0.1,0.15,0.2,0.25])
       #ax.yaxis.grid(which="major", color="r", linestyle="-", linewidth=2)
       ax.yaxis.grid()
      # annotate("slope 0.107",xy=[20,2],
@@ -165,58 +189,62 @@ function nlys()
      # )
       #ax.xaxis.set_major_formatter(majorformatter)
       #fig.autofmt_xdate(bottom=0.2,rotation=30,ha="right")
-      xlabel("time (days)")
-      ylabel("slope")
+      xlabel("time (days)",fontsize=12)
+      ylabel("growth rate",labelpad=20,fontsize=12)
 
   subplot(3,4,2)          # Italy
       plot(t_it,I_it,"r*")        
       #ylabel("infected Italy")
       title("Italy,"*today)
-  subplot(3,4,6)
-      plot(t_it,log10.(I_it),"r*")        
-      plot(t_it,lI_fit_it1,"k")
-      plot(t_it,lI_fit_it,"k")
-      ylim(0.5,4.5)
-  ax=subplot(3,4,10)
-      plot(t_it,slope_it,"r*-")
-      ylim(0,0.3)
-      yticks([0,0.05,0.1,0.15,0.2,0.25,0.3])
+  ax=subplot(3,4,6)
+      semilogy(t_it,I_it,"r*")        
+      semilogy(t_it,10 .^ lI_fit_it1,"k")
+      semilogy(t_it,10 .^ lI_fit_it,"k")
+      ylim(5,5e4)
       ax.yaxis.grid()
-      xlabel("time (days)")
+  ax=subplot(3,4,10)
+      plot(t_it,growth_it,"r*-")
+      ylim(0,0.6)
+      #yticks([0,0.05,0.1,0.15,0.2,0.25])
+      ax.yaxis.grid()
+      xlabel("time (days)",fontsize=12)
       #ylabel("slope")
 
   subplot(3,4,3)              # Spain
       plot(t_es,I_es,"r*")      
       title("Spain,"*today)
-  subplot(3,4,7)
-      plot(t_es,lI_es,"r*")        
-      plot(t_es,lI_fit_es,"k")
-      ylim(0.5,4.5)
-   ax= subplot(3,4,11)
-      plot(t_es,slope_es,"r*-")
-      ylim(0,0.3)
-      yticks([0,0.05,0.1,0.15,0.2,0.25,0.3])
+  ax=subplot(3,4,7)
+      semilogy(t_es,I_es,"r*")        
+      semilogy(t_es,10 .^ lI_fit_es1,"k")
+      semilogy(t_es,10 .^ lI_fit_es2,"k")
       ax.yaxis.grid()
-      xlabel("time (days)")
+      ylim(5,5e4)
+   ax= subplot(3,4,11)
+      plot(t_es,growth_es,"r*-")
+      ylim(0,0.6)
+      #yticks([0,0.05,0.1,0.15,0.2,0.25])
+      ax.yaxis.grid()
+      xlabel("time (days)",fontsize=12)
 
   subplot(3,4,4)              # France
       plot(t_fr,I_fr,"r*")      
       title("France,"*today)
-  subplot(3,4,8)
-      plot(t_fr,lI_fr,"r*")        
-      plot(t_fr,lI_fit_fr1,"k")
-      plot(t_fr,lI_fit_fr2,"k")
-      ylim(0.5,4.5)
-   ax = subplot(3,4,12)
-      plot(t_fr,slope_fr,"r*-")
-      ylim(0,0.3)
-      yticks([0,0.05,0.1,0.15,0.2,0.25,0.3])
+  ax=subplot(3,4,8)
+      semilogy(t_fr,I_fr,"r*")        
+      semilogy(t_fr,10 .^ lI_fit_fr1,"k")
+      semilogy(t_fr,10 .^ lI_fit_fr2,"k")
       ax.yaxis.grid()
-      xlabel("time (days)")
-      #ylabel("slope")
+      ylim(5,5e4)
+  ax = subplot(3,4,12)
+      plot(t_fr,growth_fr,"r*-")
+      ylim(0,0.6)
+      #yticks([0,0.05,0.1,0.15,0.2,0.25])
+      ax.yaxis.grid()
+      xlabel("time (days)",fontsize=12)
+      #ylabel("growth")
 
   PyPlot.tight_layout()
-  savefig("../outbreak_europe.png")
+  savefig("../figures/outbreak_europe.png")
 
   
 # ********************************************
@@ -224,165 +252,351 @@ function nlys()
   clf()
   subplot(3,4,1)         # China
       plot(t_cn,I_cn,"r*")        
-      ylabel("infected")
+      ylabel("active cases",fontsize=12)
       title("China,"*today)
-  subplot(3,4,5)
-      plot(t_cn,lI_cn,"r*")        
+  ax=subplot(3,4,5)
+      semilogy(t_cn,I_cn,"r*")        
       #plot(t_cn,lI_fit_cn,"k")
-      ylabel("log10 infected", labelpad=20)
-  ax = subplot(3,4,9)
-      plot(t_cn,slope_cn,"r*-")
-      ylim(-0.05,0.2)
-      yticks([-0.05,0,0.05,0.1,0.15,0.2])
+      ylim(1e2,1e5)
       ax.yaxis.grid()
-      xlabel("time (days)")
-      ylabel("slope")
+      ylabel("active cases", labelpad=20,fontsize=12)
+  ax = subplot(3,4,9)
+      plot(t_cn,growth_cn,"r*-")
+      ylim(-0.1,0.5)
+      #yticks([-0.05,0,0.05,0.1,0.15,0.2])
+      ax.yaxis.grid()
+      xlabel("time (days)",fontsize=12)
+      ylabel("growth",fontsize=12,labelpad=10)
 
   subplot(3,4,2)          # Japan
       plot(t_jp,I_jp,"r*")        
       #ylabel("infected Italy")
       title("Japan,"*today)
-  subplot(3,4,6)
-      plot(t_jp,log10.(I_jp),"r*")        
-      plot(t_jp,lI_fit_jp,"k")
+  ax=subplot(3,4,6)
+      semilogy(t_jp,I_jp,"r*")        
+      semilogy(t_jp,10 .^ lI_fit_jp,"k")
+      ax.yaxis.grid()
+      ylim(5,2e4)
       #ylabel("log10 infected Italy")
   ax=subplot(3,4,10)
-      plot(t_jp,slope_jp,"r*-")
-      ylim(-0.05,0.2)
-      yticks([-0.05,0,0.05,0.1,0.15,0.2])
+      plot(t_jp,growth_jp,"r*-")
+      ylim(-0.1,0.5)
+      #yticks([-0.05,0,0.05,0.1,0.15,0.2])
       ax.yaxis.grid()
-      xlabel("time (days)")
-      #ylabel("slope")
+      xlabel("time (days)",fontsize=12)
+      #ylabel("growth")
 
   subplot(3,4,3)              # South Korean
       plot(t_kr,I_kr,"r*")      
       #ylabel("infected Spain")
       title("South Korea,"*today)
-  subplot(3,4,7)
-      plot(t_kr,lI_kr,"r*")        
+  ax=subplot(3,4,7)
+      semilogy(t_kr,I_kr,"r*")        
+      ax.yaxis.grid()
+      ylim(5,2e4)
       #plot(t_kr,lI_fit_kr,"k")
       #ylabel("log10 infected Spain")
   ax= subplot(3,4,11)
-      plot(t_kr,slope_kr,"r*-")
-      ylim(-0.05,0.2)
-      yticks([-0.05,0,0.05,0.1,0.15,0.2])
+      plot(t_kr,growth_kr,"r*-")
+      ylim(-0.1,0.5)
+      #yticks([-0.05,0,0.05,0.1,0.15,0.2])
       ax.yaxis.grid()
-      xlabel("time (days)")
-      #ylabel("slope")
+      xlabel("time (days)",fontsize=12)
+      #ylabel("growth")
 
   subplot(3,4,4)              # Iran
       plot(t_ir,I_ir,"r*")      
       #ylabel("infected")
       title("Iran,"*today)
-  subplot(3,4,8)
-      plot(t_ir,lI_ir,"r*")        
-      plot(t_ir,lI_fit_ir,"k")
+  ax=subplot(3,4,8)
+      semilogy(t_ir,I_ir,"r*")        
+      semilogy(t_ir,10 .^ lI_fit_ir,"k")
+      ax.yaxis.grid()
+      ylim(5,2e4)
       #ylabel("log10 infected")
   ax = subplot(3,4,12)
-      plot(t_ir,slope_ir,"r*-")
-      ylim(-0.05,0.2)
-      yticks([-0.05,0,0.05,0.1,0.15,0.2])
+      plot(t_ir,growth_ir,"r*-")
+      ylim(-0.1,0.5)
+      #yticks([-0.05,0,0.05,0.1,0.15,0.2])
       ax.yaxis.grid()
-      xlabel("time (days)")
-      #ylabel("slope")
+      xlabel("time (days)",fontsize=12)
+      #ylabel("growth")
   PyPlot.tight_layout()
-  PyPlot.tight_layout()
-  savefig("../outbreak_Asia.png")
+  savefig("../figures/outbreak_Asia.png")
 
 # ********************************************
-  figure("Outbreak World1")
+  fig=figure("Outbreak World",figsize=(12,8))
   clf()
   subplot(3,4,1)         # USA
       plot(t_us,I_us,"r*")        
-      ylabel("infected")
-      title("USA")
-  subplot(3,4,5)
-      plot(t_us,lI_us,"r*")        
-      plot(t_us,lI_fit_us,"k")
-      ylabel("log10 infected")
+      ylabel("active cases",fontsize=12)
+      title("USA,"*today)
+  ax=subplot(3,4,5)
+      semilogy(t_us,I_us,"r*")        
+      semilogy(t_us,10 .^ lI_fit_us,"k")
+      ax.yaxis.grid()
+      ylim(5,2e4)
+      ylabel("active cases",fontsize=12,labelpad=12)
   ax = subplot(3,4,9)
-      plot(t_us,slope_us,"r*-")
+      plot(t_us,growth_us,"r*-")
       ax.yaxis.grid()
-      xlabel("time (days)")
-      ylabel("slope")
+      ylim(0,0.6)
+      #yticks([0,0.05,0.1,0.15,0.2,0.25])
+      xlabel("time (days)",fontsize=12)
+      ylabel("growth",fontsize=12,labelpad=12)
 
-  subplot(3,4,2)         # Israel
-      plot(t_il,I_il,"r*")        
-      ylabel("infected")
-      title("Israel")
-  subplot(3,4,6)
-      plot(t_il,lI_il,"r*")        
-      plot(t_il,lI_fit_il,"k")
-      ylabel("log10 infected")
-  ax = subplot(3,4,10)
-      plot(t_il,slope_il,"r*-")
+  subplot(3,4,2)              # Canada
+      plot(t_ca,I_ca,"r*")      
+      #ylabel("infected")
+      title("Canada,"* today)
+  ax=subplot(3,4,6)
+      semilogy(t_ca,I_ca,"r*")        
+      semilogy(t_ca,10 .^ lI_fit_ca,"k")
       ax.yaxis.grid()
-      xlabel("time (days)")
-      ylabel("slope")
+      ylim(5,2e4)
+      #ylabel("log10 infected")
+  ax = subplot(3,4,10)
+      plot(t_ca,growth_ca,"r*-")
+      ylim(0,0.6)
+      #yticks([0,0.05,0.1,0.15,0.2,0.25])
+      ax.yaxis.grid()
+      xlabel("time (days)",fontsize=12)
+      #ylabel("growth")
 
   subplot(3,4,3)              # UK
       plot(t_uk,I_uk,"r*")      
       #ylabel("infected Spain")
-      title("UK")
-  subplot(3,4,7)
-      plot(t_uk,lI_uk,"r*")        
-      plot(t_uk,lI_fit_uk,"k")
+      title("UK,"*today)
+  ax=subplot(3,4,7)
+      semilogy(t_uk,I_uk,"r*")        
+      semilogy(t_uk,10 .^ lI_fit_uk,"k")
+      ax.yaxis.grid()
+      ylim(5,2e4)
       #ylabel("log10 infected Spain")
   ax= subplot(3,4,11)
-      plot(t_uk,slope_uk,"r*-")
+      plot(t_uk,growth_uk,"r*-")
       ax.yaxis.grid()
-      xlabel("time (days)")
-      #ylabel("slope")
+      ylim(0,0.6)
+      #yticks([0,0.05,0.1,0.15,0.2,0.25])
+      xlabel("time (days)",fontsize=12)
+      #ylabel("growth")
+ 
+
+  subplot(3,4,4)         # Israel
+      plot(t_il,I_il,"r*")        
+      title("Israel,"*today)
+  ax=subplot(3,4,8)
+      semilogy(t_il,I_il,"r*")        
+      semilogy(t_il,10 .^ lI_fit_il,"k")
+      ax.yaxis.grid()
+      ylim(1,1e3)
+  ax = subplot(3,4,12)
+      plot(t_il,growth_il,"r*-")
+      ax.yaxis.grid()
+      ylim(0,0.6)
+      #yticks([0,0.05,0.1,0.15,0.2,0.25])
+      xlabel("time (days)",fontsize=12)
+      
+  PyPlot.tight_layout()
+  savefig("../figures/outbreak_World.png")
 
 
 
 
 
 # ********************************************
-  figure("Outbreak Small Europe1")
+  fig=figure("Outbreak Small Europe",figsize=(12,8))
   clf()
+  subplot(3,4,1)         # Netherlands
+      plot(t_nl,I_nl,"r*")        
+      ylabel("active cases",fontsize=12)
+     
+      title("Netherlands,"* today)
+  ax=subplot(3,4,5)
+      semilogy(t_nl,I_nl,"r*")        
+      semilogy(t_nl,10 .^ lI_fit_nl,"k")
+      ax.yaxis.grid()
+      ylim(5,1e4)
+      ylabel("active cases",labelpad=16,fontsize=12)
+   ax = subplot(3,4,9)
+      plot(t_nl,growth_nl,"r*-")
+      ylim(0,0.6)
+      #yticks([0,0.05,0.1,0.15,0.2,0.25])
+      #ax.yaxis.grid(which="major", color="r", linestyle="-", linewidth=2)
+      ax.yaxis.grid()
+     # annotate("growth 0.107",xy=[20,2],
+     # xycoords="axes fraction"
+     # )
+      #ax.xaxis.set_major_formatter(majorformatter)
+      #fig.autofmt_xdate(bottom=0.2,rotation=30,ha="right")
+      xlabel("time (days)",fontsize=12)
+      ylabel("growth",fontsize=12,labelpad=20)
+
+  subplot(3,4,2)          # Norway
+      plot(t_no,I_no,"r*")        
+      #ylabel("infected Italy")
+      title("Norway,"*today)
+  ax=subplot(3,4,6)
+      semilogy(t_no,I_no,"r*")        
+      semilogy(t_no,10 .^ lI_fit_no,"k")
+      ax.yaxis.grid()
+      ylim(5,1e4)
+  ax=subplot(3,4,10)
+      plot(t_no,growth_no,"r*-")
+      ylim(0,0.6)
+      #yticks([0,0.05,0.1,0.15,0.2,0.25])
+      ax.yaxis.grid()
+      xlabel("time (days)",fontsize=12)
+      #ylabel("growth")
 
   subplot(3,4,3)              # Switzerland
       plot(t_ch,I_ch,"r*")      
       #ylabel("infected Spain")
-      title("Switzerland")
-  subplot(3,4,7)
-      plot(t_ch,lI_ch,"r*")        
-      plot(t_ch,lI_fit_ch,"k")
+      title("Switzerland,"* today)
+  ax=subplot(3,4,7)
+      semilogy(t_ch,I_ch,"r*")        
+      semilogy(t_ch,10 .^ lI_fit_ch,"k")
+      ax.yaxis.grid()
+      ylim(5,1e4)
       #ylabel("log10 infected Spain")
   ax= subplot(3,4,11)
-      plot(t_ch,slope_ch,"r*-")
+      plot(t_ch,growth_ch,"r*-")
+      ylim(0,0.6)
+      #yticks([0,0.05,0.1,0.15,0.2,0.25])
       ax.yaxis.grid()
-      xlabel("time (days)")
-      #ylabel("slope")
+      xlabel("time (days)",fontsize=12)
+      #ylabel("growth")
 
   subplot(3,4,4)              # Austria
       plot(t_at,I_at,"r*")      
       #ylabel("infected")
-      title("Austria")
-  subplot(3,4,8)
-      plot(t_at,lI_at,"r*")        
-      plot(t_at,lI_fit_at,"k")
+      title("Austria,"* today)
+  ax=subplot(3,4,8)
+      semilogy(t_at,I_at,"r*")        
+      semilogy(t_at,10 .^ lI_fit_at,"k")
+      ax.yaxis.grid()
+      ylim(5,1e4)
       #ylabel("log10 infected")
   ax = subplot(3,4,12)
-      plot(t_at,slope_at,"r*-")
+      plot(t_at,growth_at,"r*-")
+      ylim(0,0.6)
+      #yticks([0,0.05,0.1,0.15,0.2,0.25])
       ax.yaxis.grid()
-      xlabel("time (days)")
-      #ylabel("slope")
+      xlabel("time (days)",fontsize=12)
+      #ylabel("growth")
+  PyPlot.tight_layout()
+  savefig("../figures/outbreak_europe1.png")
 
 
+# ********************************************
+
+   lt_it = log10.(t_it)
+   p_tot_it = polyfit(lt_it,lI_it,1)  # fit full slope Germany
+   println("loglog It ", coeffs(p_tot_it)[2])
+   I_fit_it = 10 .^ polyval(p_tot_it, lt_it)
+
+   lt_de = log10.(t_de)
+   p_tot_de = polyfit(lt_de,lI_de,1)  # fit full slope Germany
+   println("loglog It ", coeffs(p_tot_de)[2])
+   I_fit_de = 10 .^ polyval(p_tot_de, lt_de)
+   
    figure("ts")
    clf()
    subplot(2,1,1)
-   plot(t_us,I_us,"*-")
+   loglog(t_it,I_it,"*-")
+   loglog(t_it,I_fit_it,"-")
    
    subplot(2,1,2)
-   semilogy(t_us,I_us,"*-")
-   semilogy(t_us,R_us)
-   semilogy(t_us,D_us)
+   loglog(t_de,I_de,"*-")
+   loglog(t_de,I_fit_de,"-")
+   #semilogy(t_es,I_es,"r*-")
 
 end
 
+# **********************************************************
+# **********************************************************
+# **********************************************************
+
+
+function nlys_ItDe()
+  today = " March 18"
+  t_it,I_it,R_it,D_it = covid_ts("Italy",Date(2020,2,21))
+  I_it, lI_it = smooth_log(I_it)
+  di = 2
+  slope_it,growth_it = local_fit(t_it,lI_it,di)
+  
+  p_tot_it1 = polyfit(t_it[3:8],lI_it[3:8],1)  # fit slope 1st phase Italy
+  coef = coeffs(p_tot_it1)[2]
+  println("slope Italy Phase 1 ",coef, " T12 ", doubling_time(coef))
+  lI_fit_it1 = polyval(p_tot_it1, t_it)
+
+  p_tot_it2 = polyfit(t_it[9:22],lI_it[9:22],1)  # fit slope 2nd phase Italy
+  coef = coeffs(p_tot_it2)[2]
+  println("slope Italy Phase 2 ",coef, " T12 ", doubling_time(coef))
+  lI_fit_it2 = polyval(p_tot_it2, t_it)
+
+  p_tot_it3 = polyfit(t_it[23:end],lI_it[23:end],1)  # fit slope 2nd phase Italy
+  coef = coeffs(p_tot_it3)[2]
+  println("slope Italy Phase 3 ",coef, " T12 ", doubling_time(coef))
+  lI_fit_it3 = polyval(p_tot_it3, t_it)
+
+  # ********************
+  t_de,I_de,R_de,D_de = covid_ts("Germany",  Date(2020,2,24))
+  t_de = t_de .+ 3 # bring to the same time axis
+  I_de, lI_de = smooth_log(I_de)
+  di = 2
+  slope_de, growth_de = local_fit(t_de,lI_de,di)
+
+  p_tot_de1 = polyfit(t_de[4:11],lI_de[4:11],1)  # fit full slope Germany
+  coef = coeffs(p_tot_de1)[2]
+  println("slope Germany ",coef, " T12 ", doubling_time(coef))
+  lI_fit_de1= polyval(p_tot_de1, t_de)
+
+  p_tot_de2 = polyfit(t_de[12:end],lI_de[12:end],1)  # fit full slope Germany
+  coef = coeffs(p_tot_de2)[2]
+  println("slope Germany ",coef, " T12 ", doubling_time(coef))
+  lI_fit_de2= polyval(p_tot_de2, t_de)
+
+
+   figure("Germany_Italy", figsize=(12,6))
+   clf()
+   subplot(1,2,1)
+      semilogy(t_it[1:12],10 .^ lI_fit_it1[1:12],"k")
+      semilogy(t_it[5:25],10 .^ lI_fit_it2[5:25],"k")
+      semilogy(t_it[19:28],10 .^ lI_fit_it3[19:28],"k")
+      semilogy(t_it,I_it,"b*", label="Italy", markersize=8)        
+      semilogy(t_de[1:15],10 .^ lI_fit_de1[1:15],"k")
+      semilogy(t_de[8:end],10 .^ lI_fit_de2[8:end],"k")
+      semilogy(t_de,I_de,"r*",label="Germany",markersize=8)        
+      #plot([10,10],[8,5e4],"grey",linewidth=1)
+      #ylim(0.5,5)
+      ylim(8,5e4)
+      ylabel("active cases",fontsize=14)
+      xlabel("time (Feb 21 - March 19)", fontsize=14)
+      legend(loc="upper left",fancybox="true")
+   ax = subplot(1,2,2)
+      plot(t_it,growth_it,"b*-",label="Italy",markersize=8)
+      plot(t_de,growth_de,"r*-",label="Germany",markersize=8)
+      #plot([10,10],[0,0.6],"grey",linewidth=1)
+      #ylim(0,0.22)
+      #yticks([0,0.05,0.1,0.15,0.2])
+      ylim(0,0.6)
+      #yticks([0,0.05,0.1,0.15,0.2])
+      ax.yaxis.grid()
+      #xlabel("time (days)",fontsize=14)
+      xlabel("time (Feb 21 - March 18)", fontsize=14)
+      ylabel("growth rate",fontsize=14)
+      legend(loc="upper right",fancybox="true")
+  PyPlot.tight_layout()
+  savefig("../figures/ItalyGermany_March19.png")
+
+
+end
+
+#country = "Italy"; date = Date(2020,2,20)
+
+#nlys_country(country, date)
+nlys_ItDe()
 
 nlys()
 
