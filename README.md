@@ -28,6 +28,9 @@ In particular, daily incidence, visualization of log-transformed data and analys
 A julia implementation of the SEIR-like model describing the Coronavirus COVID-19 outbreak 2019/20,
 based on the publication: Wang et al. (2020) Evolving epidemiology and impact of non-pharmaceutical interventions on the outbreak of coronavirus disease 2019 in Wuhan, China. MedRxive https://doi.org/10.1101/2020.03.03.20030593
 
+##### metapop.jl
+A dual-scale metapopulation model to simulate prevalence distributions in a
+network of countries. This is the model, used in my publication https://arxiv.org/abs/2004.00940
 
 **Disclaimer**: 
 *This code is not meant to be a quantitive tool for predicting the current outbreak dynamics in different parts of the world*:
