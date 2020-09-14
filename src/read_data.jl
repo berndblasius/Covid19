@@ -2,8 +2,9 @@
 # from John Hopkins CSSE repository
 # https://github.com/CSSEGISandData/COVID-19
 #
+# the data should already be downloaded from the repository and be on 
+# your local hard drive. Make sure to adapt the path variables below
 
-#module C
 
 using CSV, DataFrames, Dates
 
@@ -109,7 +110,7 @@ end
 function read_all_data()
   df_confirmed = CSV.read(csse_path*"time_series_covid19_confirmed_global.csv")
   df_death     = CSV.read(csse_path*"time_series_covid19_deaths_global.csv")
-  df_recovered = CSV.read(csse_path*"time_series_covid19_recovered_global.csv")
+  #df_recovered = CSV.read(csse_path*"time_series_covid19_recovered_global.csv")
   first_date = Date(2020,1,22)              # first entry in database: Jan 22, 2020
   countries = df_confirmed[:,2]
 
@@ -118,7 +119,7 @@ function read_all_data()
   maxdays = size(df_confirmed)[2] - 4          # number of reported days
   I = zeros(Int,maxdays,ncountries)
   D = zeros(Int,maxdays,ncountries)
-  R = zeros(Int,maxdays,ncountries)
+  #R = zeros(Int,maxdays,ncountries)
 
   j = 0
   for c in unique_countries
@@ -127,10 +128,11 @@ function read_all_data()
       for i in inds
           I[:,j] .+= collect(df_confirmed[i, 5:end])  # sum over all Provinces/States in a country
           D[:,j] .+= collect(df_death[i,     5:end]) 
-  #        R[:,j] .+= collect(df_recovered[i, 5:end]) 
+          #R[:,j] .+= collect(df_recovered[i, 5:end]) 
       end
   end
   1:length(I),I,D,unique_countries
+  #1:length(I),I,D,R,unique_countries
 
 end
 
